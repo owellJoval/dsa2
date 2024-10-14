@@ -6,6 +6,7 @@ listener kafka:Listener standardListener = new(kafka:DEFAULT_URL, {
     topics: ["standard-delivery"]
 });
 
+// Define the service that handles incoming messages for standard deliveries
 service on standardListener {
     remote function onMessage(kafka:ConsumerMessage[] messages) returns error? {
         foreach var message in messages {
