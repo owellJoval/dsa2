@@ -2,6 +2,7 @@ import ballerina/kafka;
 import ballerina/io;
 import ballerina/log;
 
+// Initialize Kafka producer to send logistics requests
 kafka:Producer logisticsProducer = new(kafka:DEFAULT_URL);
 
 public function main() returns error? {
@@ -11,9 +12,14 @@ public function main() returns error? {
     io:println("2. Express Delivery");
     io:println("3. International Delivery");
 
+
+// Read user input for shipment type
     string shipmentType = io:readln();
+
+// Determine the selected shipment type based on user input
     string selectedType = getShipmentType(shipmentType);
 
+// If the user selects an invalid shipment type, exit the program
     if selectedType == "Invalid" {
         io:println("Invalid shipment type selected. Exiting...");
         return;
