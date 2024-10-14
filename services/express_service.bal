@@ -7,7 +7,7 @@ listener kafka:Listener expressListener = new(kafka:DEFAULT_URL, {
     groupId: "express-service-group",
     topics: ["express-delivery"]
 });
-
+//
 // Define the service that listens for Kafka messages
 service on expressListener {
 // Remote function that gets triggered when messages are received from Kafka
