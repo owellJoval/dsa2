@@ -1,31 +1,65 @@
 import ballerina/kafka;
+import ballerina/http;
 import ballerina/log;
-import ballerina/io;
+import ballerina/mongo;
+import ballerina/time;
+import ballerina/jsonutils; // Needed to convert between JSON and records
 
-// Initialize a Kafka listener to consume messages from the "logistics-topic" topic
-listener kafka:Listener kafkaListener = new(kafka:DEFAULT_URL, {
-    groupId: "logistics-service-group",
-    topics: ["logistics-topic"]
+type ShipmentRequest record {
+    string shipmentType;
+    string pickupLocation;
+    string deliveryLocation;
+    string firstName;
+    string lastName;
+    string contactNumber;
+    string preferredTimeSlot;
+};
+
+type ShipmentResponse record {
+    string status;
+    string trackingId;
+    string estimatedDeliveryTime;
+};
+
+// Kafka consumer to listen to requests
+listener kafka:Consumer kafkaConsumer = new({
+    bootstrapServers: "localhost:9092",
+    groupId: "logistics_group",
+    topics: ["logistics_requests"],
+    pollingInterval: 1000
 });
 
-// Define the service to handle and process logistics messages
-service on kafkaListener {
-    remote function onMessage(kafka:ConsumerMessage[] messages) returns error? {
-        foreach var message in messages {
-            string request = message.value.toString();
-            log:printInfo("Received logistics request: " + request);
-            // Process request and delegate to appropriate service
-            // Assuming the message has a shipment type
-            if (request.includes("standard")) {
-                check kafka:produce("standard-delivery", request);
-            // Route to the express delivery service
-            } else if (request.includes("express")) {
-                check kafka:produce("express-delivery", request);
-            // Route to the express delivery service
-            } else if (request.includes("international")) {
-                check kafka:produce("international-delivery", request);
+// MongoDB client to store customer data
+mongo:Client dbClient = check new("mongodb://localhost:27017", "logistics_db");
+
+// HTTP clients for specialized services
+http:Client standardServiceClient = check new("http://localhost:8081");
+http:Client expressServiceClient = check new("http://localhost:8082");
+http:Client internationalServiceClient = check new("http://localhost:8083");
+
+service on kafkaConsumer {
+    // Remote method to process Kafka consumer records
+    remote function onConsumerRecord(kafka:ConsumerRecord[] records) returns error? {
+        foreach kafka:ConsumerRecord record in records {
+            // Convert Kafka record value from JSON to ShipmentRequest
+            ShipmentRequest request = check jsonutils:fromJSON(record.value, ShipmentRequest);
+
+            // Depending on the shipment type, call the appropriate service
+            string response;
+            if request.shipmentType == "standard" {
+                response = check standardServiceClient->post("/process", request);
+            } else if request.shipmentType == "express" {
+                response = check expressServiceClient->post("/process", request);
+            } else if request.shipmentType == "international" {
+                response = check internationalServiceClient->post("/process", request);
             }
+
+            // Convert the response from JSON to ShipmentResponse
+            ShipmentResponse shipmentResponse = check jsonutils:fromJSON(response, ShipmentResponse);
+            log:printInfo("Shipment processed: " + shipmentResponse.toString());
+
+            // Store shipment information in MongoDB (optional)
+            check dbClient->insert("shipments", shipmentResponse);
         }
     }
-//end
 }
