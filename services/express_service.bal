@@ -1,4 +1,5 @@
-
+import ballerina/kafka;
+import ballerina/log;
 
 listener kafka:Listener expressListener = new(kafka:DEFAULT_URL, {
     groupId: "express-service-group",
