@@ -1,0 +1,58 @@
+[
+    {
+        "shipmentId": "SHP001",
+        "shipmentType": "standard",
+        "pickupLocation": "New York",
+        "deliveryLocation": "Los Angeles",
+        "customer": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "contact": "+1234567890"
+        },
+        "timeSlot": "10:00 - 12:00",
+        "status": "pending",
+        "trackingNumber": "TRK001"
+    },
+    {
+        "shipmentId": "SHP002",
+        "shipmentType": "express",
+        "pickupLocation": "Chicago",
+        "deliveryLocation": "Miami",
+        "customer": {
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "contact": "+0987654321"
+        },
+        "timeSlot": "12:00 - 14:00",
+        "status": "confirmed",
+        "trackingNumber": "TRK002"
+    },
+    {
+        "shipmentId": "SHP003",
+        "shipmentType": "international",
+        "pickupLocation": "San Francisco",
+        "deliveryLocation": "Tokyo, Japan",
+        "customer": {
+            "firstName": "Alice",
+            "lastName": "Johnson",
+            "contact": "+1122334455"
+        },
+        "timeSlot": "14:00 - 16:00",
+        "status": "in transit",
+        "trackingNumber": "TRK003"
+    },
+    {
+        "shipmentId": "SHP004",
+        "shipmentType": "standard",
+        "pickupLocation": "Austin",
+        "deliveryLocation": "Denver",
+        "customer": {
+            "firstName": "Bob",
+            "lastName": "Brown",
+            "contact": "+5566778899"
+        },
+        "timeSlot": "09:00 - 11:00",
+        "status": "delivered",
+        "trackingNumber": "TRK004"
+    }
+]
