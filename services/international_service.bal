@@ -1,24 +1,12 @@
-import ballerina/kafka;
+import ballerina/http;
 import ballerina/log;
 
-// Initialize a Kafka listener to consume messages from the "international-delivery" topic
-listener kafka:Listener internationalListener = new(kafka:DEFAULT_URL, {
-    groupId: "international-service-group",
-    topics: ["international-delivery"]
-});
+service /process on new http:Listener(8083) {
+    resource function post shipment(http:Caller caller, http:Request req) returns error? {
+        json shipmentData = check req.getJsonPayload();
+        log:printInfo("International delivery service processing: " + shipmentData.toString());
 
-// Define the service that processes incoming Kafka messages
-service on internationalListener {
-
-// This remote function is triggered whenever messages are received from the topic
-    remote function onMessage(kafka:ConsumerMessage[] messages) returns error? {
-// Loop through each received message
-        foreach var message in messages {
-// Convert the message payload to a string
-            string request = message.value.toString();
-            log:printInfo("Processing international delivery request: " + request);
-            // Process and confirm international delivery
-        }
+        json response = {status: "confirmed", trackingId: "IN123", estimatedDeliveryTime: "7 days"};
+        check caller->respond(response);
     }
-//end
 }
