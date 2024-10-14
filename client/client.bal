@@ -5,7 +5,7 @@ import ballerina/log;
 kafka:Producer logisticsProducer = new(kafka:DEFAULT_URL);
 
 public function main() returns error? {
-    // Get shipment type from user
+    // Get shipment type from user//
     io:println("Select shipment type:");
     io:println("1. Standard Delivery");
     io:println("2. Express Delivery");
