@@ -2,7 +2,7 @@ import ballerina/kafka;
 import ballerina/io;
 import ballerina/log;
 
-// Initialize Kafka producer to send logistics requests
+// Create a Kafka producer instance for sending logistics requests
 kafka:Producer logisticsProducer = new(kafka:DEFAULT_URL);
 
 public function main() returns error? {
@@ -13,33 +13,35 @@ public function main() returns error? {
     io:println("3. International Delivery");
 
 
-// Read user input for shipment type
+// Capture user input for shipment type
     string shipmentType = io:readln();
 
 // Determine the selected shipment type based on user input
     string selectedType = getShipmentType(shipmentType);
 
-// If the user selects an invalid shipment type, exit the program
+//If the user provides invalid input, display an error message and terminate the program
     if selectedType == "Invalid" {
         io:println("Invalid shipment type selected. Exiting...");
         return;
     }
 
-    // Get pickup and delivery locations
+    // Prompt the user to enter the pickup location
     io:println("Enter pickup location:");
     string pickupLocation = io:readln();
     io:println("Enter delivery location:");
     string deliveryLocation = io:readln();
 
-    // Get customer details
+    // Collect customer's first name from the user
     io:println("Enter customer's first name:");
     string firstName = io:readln();
+    // Collect customer's last name from the user
     io:println("Enter customer's last name:");
     string lastName = io:readln();
+    // Collect customer's contact number from the user
     io:println("Enter customer's contact number:");
     string contactNumber = io:readln();
 
-    // Get preferred time slot
+    // Prompt the user to enter the preferred pickup time slot
     io:println("Enter preferred pickup time slot (e.g., 10:00 - 12:00):");
     string timeSlot = io:readln();
 
@@ -48,7 +50,7 @@ public function main() returns error? {
                               "deliveryLocation": "${deliveryLocation}", "customer": {"firstName": "${firstName}", 
                               "lastName": "${lastName}", "contact": "${contactNumber}"}, 
                               "timeSlot": "${timeSlot}"}`;
-
+    // Log the request details before sending
     log:printInfo("Sending logistics request: " + request);
 
     // Send the request to Kafka topic
@@ -56,7 +58,8 @@ public function main() returns error? {
         topic: "logistics-topic",
         value: request
     });
-    
+
+    // Confirm successful submission of the logistics request to the user
     io:println("Logistics request for " + selectedType + " sent successfully!");
 }
 
