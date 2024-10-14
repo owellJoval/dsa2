@@ -1,0 +1,54 @@
+version: '3.7'
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - kafka-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - kafka-network
+
+  mongodb:
+    image: mongo:latest
+    networks:
+      - mongo-network
+    ports:
+      - "27017:27017"
+
+  logistics-service:
+    build: .
+    command: bal run services/logistics_service.bal
+    networks:
+      - kafka-network
+      - mongo-network
+
+  standard-service:
+    build: .
+    command: bal run services/standard_service.bal
+    networks:
+      - kafka-network
+
+  express-service:
+    build: .
+    command: bal run services/express_service.bal
+    networks:
+      - kafka-network
+
+  international-service:
+    build: .
+    command: bal run services/international_service.bal
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+  mongo-network:
