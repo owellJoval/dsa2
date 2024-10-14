@@ -65,4 +65,5 @@ function getShipmentType(string choice) returns string {
     } else {
         return "Invalid";
     }
+//end
 }
