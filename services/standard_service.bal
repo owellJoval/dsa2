@@ -1,4 +1,5 @@
-
+import ballerina/kafka;
+import ballerina/log;
 
 listener kafka:Listener standardListener = new(kafka:DEFAULT_URL, {
     groupId: "standard-service-group",
