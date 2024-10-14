@@ -1,18 +1,12 @@
-import ballerina/kafka;
+import ballerina/http;
 import ballerina/log;
 
-listener kafka:Listener standardListener = new(kafka:DEFAULT_URL, {
-    groupId: "standard-service-group",
-    topics: ["standard-delivery"]
-});
+service /process on new http:Listener(8081) {
+    resource function post shipment(http:Caller caller, http:Request req) returns error? {
+        json shipmentData = check req.getJsonPayload();
+        log:printInfo("Standard delivery service processing: " + shipmentData.toString());
 
-// Define the service that handles incoming messages for standard deliveries
-service on standardListener {
-    remote function onMessage(kafka:ConsumerMessage[] messages) returns error? {
-        foreach var message in messages {
-            string request = message.value.toString();
-            log:printInfo("Processing standard delivery request: " + request);
-            // Process and confirm the standard delivery
-        }
+        json response = {status: "confirmed", trackingId: "ST123", estimatedDeliveryTime: "3 days"};
+        check caller->respond(response);
     }
 }
